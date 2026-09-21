@@ -7,7 +7,6 @@ def main():
     db_manager = DatabaseManager()
     app = ContactManagerUI(root, db_manager)
     
-    # Optional: handle window close event to close the database connection
     def on_closing():
         db_manager.close()
         root.destroy()
