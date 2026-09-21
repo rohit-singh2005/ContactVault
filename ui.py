@@ -1,20 +1,11 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
-import sqlite3
 
-class ContactManager:
-    def __init__(self, root):
-        self.db = sqlite3.connect('contacts.db')
-        self.cursor = self.db.cursor()
-        self.cursor.execute('''CREATE TABLE IF NOT EXISTS contacts (
-            id INTEGER PRIMARY KEY,
-            name TEXT,
-            address TEXT,
-            gender TEXT,
-            phone TEXT)''')
-        self.db.commit()
-
+class ContactManagerUI:
+    def __init__(self, root, db_manager):
         self.root = root
+        self.db_manager = db_manager
+        
         self.root.title("Contact Management System")
 
         self.name_input = tk.StringVar()
@@ -56,9 +47,7 @@ class ContactManager:
         gender = self.gender_input.get()
         phone = self.phone_input.get()
         if name and phone:
-            self.cursor.execute("INSERT INTO contacts (name, address, gender, phone) VALUES (?, ?, ?, ?)", 
-                                (name, address, gender, phone))
-            self.db.commit()
+            self.db_manager.add_contact(name, address, gender, phone)
             self.load_contacts()
             self.name_input.set('')
             self.addr_input.set('')
@@ -70,18 +59,12 @@ class ContactManager:
     def load_contacts(self):
         for row in self.tree.get_children():
             self.tree.delete(row)
-        for contact in self.cursor.execute("SELECT name, address, gender, phone FROM contacts"):
+        for contact in self.db_manager.get_all_contacts():
             self.tree.insert('', tk.END, values=contact)
 
     def remove_contact(self, event):
         selected = self.tree.focus()
         if selected:
             values = self.tree.item(selected, 'values')
-            self.cursor.execute("DELETE FROM contacts WHERE name=? AND phone=?", (values[0], values[3]))
-            self.db.commit()
+            self.db_manager.delete_contact(values[0], values[3])
             self.load_contacts()
-
-if __name__ == "__main__":
-    root = tk.Tk()
-    app = ContactManager(root)
-    root.mainloop()
