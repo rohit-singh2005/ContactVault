@@ -30,10 +30,10 @@ def main():
     print("---------------------------------------")
 
     if result.wasSuccessful():
-        print("✅ ALL TESTS PASSED SUCCESSFULLY!")
+        print("[SUCCESS] ALL TESTS PASSED SUCCESSFULLY!")
         sys.exit(0)
     else:
-        print("❌ SOME TESTS FAILED.")
+        print("[FAILED] SOME TESTS FAILED.")
         
         if result.failures:
             print("\n--- Failures ---")
